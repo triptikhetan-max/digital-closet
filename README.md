@@ -39,14 +39,31 @@ teaches it everything.
 
 ### Manual: two cleanup ways
 
-| | Way 1 — local (free) | Way 2 — fal.ai (best quality) |
-|---|---|---|
-| Setup | `pip install -r requirements-local.txt` | `export FAL_KEY=...` ([fal.ai](https://fal.ai) key) |
-| Run | `python3 scripts/cleanup_local.py` | `python3 scripts/cleanup_fal.py` |
-| How | rembg matting on your machine | AI erase (hangers/hands removed, garment kept identical) + matting |
-| Cost | free | ~$0.04 / photo |
+**Way 1 — local, free, no key:**
+```bash
+pip install -r requirements-local.txt
+python3 scripts/cleanup_local.py        # rembg matting on your machine
+```
 
-Both write clean PNGs to `closet/photos/` — then add each item to
+**Way 2 — AI erase (removes hangers/hands, keeps the garment identical), with
+whichever key you already have** — `cleanup_ai.py` auto-detects it:
+
+| Provider | Key (env or `.env`) | Cost | Notes |
+|---|---|---|---|
+| **Gemini** | `GEMINI_API_KEY` | **free tier** ([aistudio.google.com](https://aistudio.google.com)) | same model family as fal's nano-banana |
+| **OpenAI** | `OPENAI_API_KEY` | ~$0.04/photo | gpt-image-1 edit |
+| **fal.ai** | `FAL_KEY` | ~$0.04/photo | nano-banana erase + BiRefNet matting |
+
+```bash
+python3 scripts/cleanup_ai.py                 # auto-picks from your keys
+python3 scripts/cleanup_ai.py --provider gemini
+```
+
+> **What about Claude?** Claude doesn't generate or edit images — but it's the
+> *brain* of this project: with Claude Code it looks at every cleaned photo and
+> writes your catalog (colors, warmth, formality, seasons) for free.
+
+Both ways write clean PNGs to `closet/photos/` — then add each item to
 `closet/wardrobe.json` (schema in `CLAUDE.md`; or let Claude do it).
 
 ## Take it with you
@@ -63,13 +80,13 @@ AirDrop `closet-app.html` to your phone → open in Safari → Share →
 - One garment per photo, laid flat on a plain contrasting surface.
 - No hangers, no hands in frame (the AI can erase them, but flat is cleaner).
 - If a cutout comes out wrong, redo it with an anchor:
-  `python3 scripts/cleanup_fal.py <photo> --desc "a grey wrap skirt, no sleeves"`
+  `python3 scripts/cleanup_ai.py <photo> --desc "a grey wrap skirt, no sleeves"`
 
 ## Privacy
 
 - Photos and catalog live only in `closet/` (gitignored).
 - Network calls: Open-Meteo weather (anonymous) and — only if you opt into
-  Way 2 — fal.ai for cleanup. That's it.
+  Way 2 — your chosen AI provider for cleanup. That's it.
 - The local server binds to your machine/LAN; nothing is published.
 
 ## License

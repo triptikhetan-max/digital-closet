@@ -16,9 +16,15 @@ scripts/           cleanup_local.py · cleanup_fal.py · build_closet.py · serv
 ## "Add my clothes" (the core flow)
 
 1. **Clean** every photo in `closet/inbox/` using ONE of two ways:
-   - **Free/local:** `python3 scripts/cleanup_local.py` (needs `pip install -r requirements-local.txt`; first run downloads a model).
-   - **Best quality (API):** `python3 scripts/cleanup_fal.py` — needs `FAL_KEY` env var or `.env`. ~$0.04/photo. Uses an erase-style AI edit (removes hangers/hands/background, keeps the garment IDENTICAL) then matting.
-   - Pick fal if a key is configured; otherwise local. Each prints JSON lines `{src, out}`.
+   - **Best quality (any AI key):** `python3 scripts/cleanup_ai.py` — auto-detects
+     `FAL_KEY`, `GEMINI_API_KEY`/`GOOGLE_API_KEY` (free tier), or `OPENAI_API_KEY`
+     from env or `.env` (see `.env.example`). Erase-style AI edit (removes
+     hangers/hands/background, keeps the garment IDENTICAL) + matting. ~$0–0.04/photo.
+   - **Free/local, no key:** `python3 scripts/cleanup_local.py` (needs
+     `pip install -r requirements-local.txt`; first run downloads a model).
+   - Pick `cleanup_ai.py` if any key is configured; otherwise local. Each prints
+     JSON lines `{src, out}`. (Claude itself cannot edit images — vision only —
+     which is why cleanup goes through these scripts.)
 2. **Look at each output PNG with vision** and catalog it. Rename the file to a
    kebab-case id (e.g. `navy-crew-sweater.png`) inside `closet/photos/`.
 3. **Append to `closet/wardrobe.json`** (read whole file, append, write back):
@@ -53,7 +59,7 @@ The AI may distort items photographed held-up or on hangers. Fix by **anchoring*
 rerun cleanup for just that file with a description of what it IS —
 
 ```
-python3 scripts/cleanup_fal.py closet/inbox/IMG_1234.jpg --desc "a grey asymmetric skirt, a bottom, no sleeves"
+python3 scripts/cleanup_ai.py closet/inbox/IMG_1234.jpg --desc "a grey asymmetric skirt, a bottom, no sleeves"
 ```
 
 If it still drifts, fall back to the unedited cutout (`cleanup_local.py`) — accuracy
@@ -83,5 +89,6 @@ reshoot that one piece laid flat.
 ## Privacy
 
 Everything is local. Photos and the catalog never leave the machine; the only
-network calls are the optional fal.ai cleanup and the weather lookup. Never
-commit `closet/`, `.env`, or any built `closet*.html` containing user images.
+network calls are the optional AI-provider cleanup (fal/Gemini/OpenAI) and the
+weather lookup. Never commit `closet/`, `.env`, or any built `closet*.html`
+containing user images.

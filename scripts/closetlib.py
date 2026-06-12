@@ -37,10 +37,15 @@ def slugify(name: str) -> str:
 
 
 def load_rgb(path) -> Image.Image:
-    """Open any image as RGB; falls back to `sips` for HEIC on macOS."""
+    """Open any image as RGB (alpha flattened onto white); `sips` fallback for HEIC."""
     path = Path(path)
     try:
-        return Image.open(path).convert("RGB")
+        img = Image.open(path)
+        if "A" in img.getbands():
+            bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
+            bg.alpha_composite(img.convert("RGBA"))
+            return bg.convert("RGB")
+        return img.convert("RGB")
     except Exception:
         if sys.platform == "darwin" and path.suffix.lower() in (".heic", ".heif"):
             tmp = Path(tempfile.mkstemp(suffix=".jpg")[1])
