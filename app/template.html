@@ -104,7 +104,7 @@ function generate(){
 }
 const SECTIONS=[['dress','Dresses'],['top','Tops'],['bottom','Bottoms'],['outerwear','Jackets & coats'],['activewear','Activewear'],['shoes','Shoes'],['bag','Bags'],['accessory','Accessories']];
 function sectionOf(i){const r=role(i);return r==='sunglasses'?'accessory':r;}
-function card(it){const c=el('div','card');const im=el('img');im.src=it.img;im.loading='lazy';c.appendChild(im);
+function card(it){const c=el('div','card');const im=el('img');im.src=it.img;c.appendChild(im);
   c.appendChild(el('div','nm',it.name));c.appendChild(el('div','meta',cap(it.type)+(it.colors&&it.colors.length?' · '+it.colors.join(', '):'')));return c;}
 function renderSections(){
   const root=document.getElementById('sections');root.innerHTML='';
