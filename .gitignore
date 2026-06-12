@@ -1,0 +1,15 @@
+# user data — never commit
+closet/
+.env
+*.fal_key
+
+# built artifacts (contain user images)
+closet-app.html
+closet.html
+
+# python
+__pycache__/
+*.pyc
+
+# os
+.DS_Store

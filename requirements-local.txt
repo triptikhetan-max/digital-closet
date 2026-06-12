@@ -1,0 +1,5 @@
+# extras for the free local cleanup path (scripts/cleanup_local.py)
+pillow
+rembg
+numpy
+scipy

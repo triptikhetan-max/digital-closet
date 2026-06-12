@@ -1,0 +1,181 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Closet</title>
+<style>
+:root{--bg:#faf7f2;--ink:#2b2b2b;--muted:#8a8270;--card:#fff;--line:#e7e0d4}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1100px;margin:0 auto;padding:24px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+h1{font-family:Georgia,serif;font-weight:500;font-size:30px;margin:0}
+.sub{color:var(--muted);margin:4px 0 20px;font-size:15px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 22px;margin-bottom:30px}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.row strong{font-family:Georgia,serif;font-size:19px}
+label{font-size:13px;color:var(--muted)}
+select{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);margin-left:6px}
+button{font:inherit;padding:9px 18px;border:none;border-radius:10px;background:var(--ink);color:#fff;cursor:pointer}
+button.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.board{position:relative;width:100%;max-width:540px;margin:18px auto 4px;aspect-ratio:1/1.1}
+.slot{position:absolute;display:flex;align-items:center;justify-content:center}
+.slot img{max-width:100%;max-height:100%;object-fit:contain}
+.ph{position:absolute;display:flex;align-items:center;justify-content:center;border:1.5px dashed #ddd3c0;border-radius:16px;color:#c2b699;font-size:13px;text-align:center}
+.why{color:var(--muted);font-size:13px;margin:8px auto 0;font-style:italic;text-align:center;max-width:540px}
+.autowx{color:var(--muted);font-size:13px;margin-top:10px}
+.sec{margin:28px 0 8px}
+.sec h2{font-family:Georgia,serif;font-weight:500;font-size:20px;margin:0 0 2px}
+.sec .cnt{color:var(--muted);font-size:13px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px}
+.card img{width:100%;height:165px;object-fit:contain;background:#fff;border-radius:10px}
+.card .nm{font-size:12.5px;margin-top:7px;line-height:1.3}
+.card .meta{font-size:11px;color:var(--muted);margin-top:2px}
+.empty{border:1.5px dashed var(--line);border-radius:14px;padding:22px;color:var(--muted);font-size:14px;text-align:center}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:88vw;text-align:center}
+</style></head><body><div class="wrap">
+<div class="head">
+  <h1>My Closet</h1>
+  <button class="ghost" id="addbtn">&#10133; Add from gallery</button>
+  <input type="file" id="upload" accept="image/*" multiple style="display:none">
+</div>
+<div class="sub" id="count"></div>
+<div class="panel">
+  <div class="row">
+    <strong>Outfit of the day</strong>
+    <label>Weather<select id="w"><option value="hot">Hot</option><option value="mild">Mild</option><option value="cold">Cold</option></select></label>
+    <label>For<select id="o"><option value="casual">Casual day</option><option value="smart-casual" selected>Smart-casual</option><option value="formal">Evening / formal</option><option value="athletic">Active / gym</option></select></label>
+    <button onclick="generate()">Style me &#8635;</button>
+  </div>
+  <div class="board" id="board"></div>
+  <div class="why" id="why"></div>
+  <div class="autowx" id="autowx"></div>
+</div>
+<div id="sections"></div>
+</div>
+<div id="toast"></div>
+<script>
+const ITEMS=__DATA__;let shown=[];
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const W=()=>document.getElementById('w').value, O=()=>document.getElementById('o').value;
+function season(){const m=new Date().getMonth();return m>=2&&m<=4?'spring':m>=5&&m<=7?'summer':m>=8&&m<=10?'fall':'winter';}
+function isActive(i){return i.formality==='athletic'||(i.tags||[]).some(t=>['athleisure','sporty','gym','activewear'].includes(t));}
+function role(i){
+  if(isActive(i))return 'activewear';
+  if(i.type==='accessory'){const t=((i.tags||[]).join(' ')+' '+i.name).toLowerCase();
+    if(/bag|tote|purse|clutch/.test(t))return 'bag';
+    if(/sunglass|sunnies|shades/.test(t))return 'sunglasses';return 'accessory';}
+  return i.type;
+}
+function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
+const pick=a=>a.length?a[Math.floor(Math.random()*a.length)]:null;
+const FORM={casual:['casual','smart-casual'],'smart-casual':['smart-casual','casual'],formal:['formal','smart-casual'],athletic:['athletic','casual']};
+const DRESS_L={feature:[6,13,42,70],outer:[0,0,26,26],sunglasses:[68,3,31,13],accessory:[72,21,25,17],bag:[65,41,33,34],shoes:[39,80,34,18]};
+const SEP_L={feature:[5,10,40,37],bottom:[5,47,40,46],outer:[0,0,24,24],sunglasses:[68,3,31,13],accessory:[72,21,25,17],bag:[65,41,33,34],shoes:[39,80,34,18]};
+const PHLAB={outer:'+ jacket',sunglasses:'+ sunglasses',accessory:'+ jewelry',bag:'+ bag',shoes:'+ shoes',bottom:'+ bottom'};
+function pickOutfit(){
+  const w=W(),o=O(),s=season(),F=FORM[o];
+  const okI=i=>F.includes(i.formality)&&(!i.seasons.length||i.seasons.includes(s)||(w==='cold'&&i.seasons.includes('winter')));
+  let pool=ITEMS.filter(okI); if(pool.length<4)pool=ITEMS.filter(i=>F.includes(i.formality)); if(pool.length<2)pool=ITEMS.slice();
+  const byR=r=>pool.filter(i=>role(i)===r&&!shown.includes(i.id));
+  const out={};
+  if(o==='athletic'){const a=pool.filter(isActive);out.feature=pick(a.filter(i=>i.type==='top'))||pick(a);out.bottom=pick(a.filter(i=>i.type==='bottom'));}
+  else{const dr=byR('dress');
+    if(dr.length&&Math.random()<0.5){out.feature=pick(dr);out.isDress=true;}
+    else{out.feature=pick(byR('top'))||pick(byR('dress'));if(out.feature&&out.feature.type==='dress')out.isDress=true;else out.bottom=pick(byR('bottom'));}}
+  if(w!=='hot'){let ot=byR('outerwear');if(w==='cold')ot=ot.filter(i=>i.warmth==='warm').concat(ot);out.outer=pick(ot);}
+  out.shoes=pick(byR('shoes'));out.bag=pick(byR('bag'));out.sunglasses=pick(byR('sunglasses'));out.accessory=pick(byR('accessory'));
+  return out;
+}
+function renderBoard(out){
+  const b=document.getElementById('board');b.innerHTML='';
+  const L=out.isDress?DRESS_L:SEP_L;const w=W();
+  for(const r in L){
+    const [l,t,ww,hh]=L[r];const it=out[r];
+    if(it){const s=el('div','slot');s.style.cssText=`left:${l}%;top:${t}%;width:${ww}%;height:${hh}%`;
+      const im=el('img');im.src=it.img;im.title=it.name;s.appendChild(im);b.appendChild(s);}
+    else if(r!=='feature'&&r!=='bottom'){ if(r==='outer'&&w==='hot')continue;
+      const p=el('div','ph',PHLAB[r]||'');p.style.cssText=`left:${l}%;top:${t}%;width:${ww}%;height:${hh}%`;b.appendChild(p);}
+  }
+}
+function generate(){
+  if(!ITEMS.length){document.getElementById('why').textContent='Your closet is empty — tap "Add from gallery" to start.';return;}
+  const out=pickOutfit();const used=Object.values(out).filter(o=>o&&o.id);
+  shown=shown.concat(used.map(i=>i.id));if(shown.length>18)shown=shown.slice(-18);
+  renderBoard(out);
+  const need=['shoes','bag','sunglasses','accessory'].filter(r=>!out[r]);
+  document.getElementById('why').textContent=cap(season())+' · '+W()+' · '+O()+' — '+used.length+' of your pieces'+(need.length?'  ·  add '+need.join(', ')+' to complete the look':'');
+}
+const SECTIONS=[['dress','Dresses'],['top','Tops'],['bottom','Bottoms'],['outerwear','Jackets & coats'],['activewear','Activewear'],['shoes','Shoes'],['bag','Bags'],['accessory','Accessories']];
+function sectionOf(i){const r=role(i);return r==='sunglasses'?'accessory':r;}
+function card(it){const c=el('div','card');const im=el('img');im.src=it.img;im.loading='lazy';c.appendChild(im);
+  c.appendChild(el('div','nm',it.name));c.appendChild(el('div','meta',cap(it.type)+(it.colors&&it.colors.length?' · '+it.colors.join(', '):'')));return c;}
+function renderSections(){
+  const root=document.getElementById('sections');root.innerHTML='';
+  for(const [key,label] of SECTIONS){
+    const its=ITEMS.filter(i=>sectionOf(i)===key);
+    const sec=el('div','sec');sec.appendChild(el('h2',null,label));
+    sec.appendChild(el('div','cnt',its.length?its.length+' piece'+(its.length>1?'s':''):'empty'));
+    if(its.length){const g=el('div','grid');its.forEach(i=>g.appendChild(card(i)));sec.appendChild(g);}
+    else sec.appendChild(el('div','empty','Nothing here yet &mdash; add some to complete your boards.'));
+    root.appendChild(sec);
+  }
+}
+const AX=()=>document.getElementById('autowx');
+function wxNote(code){
+  if([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(code))return '  ·  rain likely — grab a rain layer';
+  if([71,73,75,77,85,86].includes(code))return '  ·  snow — bundle up';
+  return '';
+}
+async function fetchWx(lat,lon,label){
+  const wx=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,weather_code').then(r=>r.json());
+  const cur=wx&&wx.current; if(!cur||cur.temperature_2m==null)return false;
+  const t=cur.temperature_2m, bucket=t>=24?'hot':t>=12?'mild':'cold';
+  document.getElementById('w').value=bucket;
+  AX().innerHTML='&#128205; '+Math.round(t)+'&deg;C'+(label?' in '+label:'')+' &rarr; dressing for <b>'+bucket+'</b>'+wxNote(cur.weather_code)+' &nbsp; <a href="#" onclick="askCity();return false" style="color:var(--muted)">change city</a>';
+  generate(); return true;
+}
+async function byCity(name){
+  try{
+    const g=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(name)+'&count=1').then(r=>r.json());
+    if(!g.results||!g.results.length){AX().textContent='couldn’t find that city — try again: ';askCity(name);return;}
+    const r=g.results[0]; localStorage.setItem('closet_city',r.name);
+    await fetchWx(r.latitude,r.longitude,r.name);
+  }catch(e){AX().textContent='weather unavailable — pick it manually above';}
+}
+function askCity(pre){
+  AX().innerHTML='&#128205; Your city: ';
+  const inp=document.createElement('input');inp.placeholder='e.g. London, New York';inp.value=pre||'';
+  inp.style.cssText='font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:8px;margin-right:8px';
+  const go=document.createElement('button');go.textContent='Set';go.style.padding='6px 14px';
+  go.onclick=()=>{if(inp.value.trim())byCity(inp.value.trim())};
+  inp.onkeydown=e=>{if(e.key==='Enter'&&inp.value.trim())byCity(inp.value.trim())};
+  AX().appendChild(inp);AX().appendChild(go);inp.focus();
+}
+function autoWeather(){
+  const saved=localStorage.getItem('closet_city');
+  if(saved){byCity(saved);return;}
+  if(navigator.geolocation){
+    AX().textContent='requesting your location…';
+    navigator.geolocation.getCurrentPosition(
+      p=>fetchWx(p.coords.latitude,p.coords.longitude,'your area').then(ok=>{if(!ok)askCity();}),
+      ()=>askCity(), {timeout:8000});
+  } else askCity();
+}
+const SERVED=location.protocol.indexOf('http')===0;
+const up=document.getElementById('upload');
+document.getElementById('addbtn').onclick=()=>{
+  if(!SERVED){toast('Run "python3 scripts/serve.py" and open the link it prints — then this button uploads straight from your gallery.',7000);return;}
+  up.click();
+};
+up.onchange=async()=>{
+  const files=[...up.files]; if(!files.length)return;
+  toast('Uploading '+files.length+' photo'+(files.length>1?'s':'')+'…',60000);
+  let ok=0;
+  for(const f of files){
+    try{const r=await fetch('/api/upload',{method:'POST',headers:{'X-Filename':encodeURIComponent(f.name)},body:f});if(r.ok)ok++;}catch(e){}
+  }
+  toast(ok+' photo'+(ok!==1?'s':'')+' saved to the inbox. Now ask Claude Code: “add my clothes”',8000);
+  up.value='';
+};
+let toastTimer;
+function toast(msg,ms){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity=1;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.style.opacity=0,ms||3500);}
+document.getElementById('count').textContent=(ITEMS.length||'0')+' pieces  ·  tap "Style me" for a daily mood board';
+renderSections();generate();autoWeather();
+</script></body></html>

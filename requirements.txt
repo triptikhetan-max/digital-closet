@@ -1,0 +1,2 @@
+# core (app build / serve / fal cleanup)
+pillow
