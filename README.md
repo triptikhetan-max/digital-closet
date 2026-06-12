@@ -7,6 +7,15 @@ today's real weather. Private by design: photos never leave your machine.
 Built to be driven by [Claude Code](https://claude.com/claude-code): you photograph
 clothes, Claude cleans + catalogs them and styles you.
 
+![Digital Closet — outfit-of-the-day mood board and sections](docs/screenshot.png)
+
+**Try it in 30 seconds** (bundled demo closet, no key needed):
+
+```bash
+cp demo/wardrobe.json closet/wardrobe.json && mkdir -p closet/photos && cp demo/photos/* closet/photos/
+python3 scripts/serve.py
+```
+
 ## What it does
 
 - **Mood board generator** — pick the occasion (or let weather auto-set), hit

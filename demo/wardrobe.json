@@ -1,0 +1,146 @@
+[
+  {
+    "id": "white-crew-tee",
+    "type": "top",
+    "name": "White crew tee",
+    "colors": [
+      "white"
+    ],
+    "formality": "casual",
+    "warmth": "light",
+    "seasons": [
+      "spring",
+      "summer",
+      "fall"
+    ],
+    "photo": "photos/white-crew-tee.png",
+    "tags": [],
+    "vibe": "clean basic"
+  },
+  {
+    "id": "light-wash-jeans",
+    "type": "bottom",
+    "name": "Light-wash jeans",
+    "colors": [
+      "blue",
+      "denim"
+    ],
+    "formality": "casual",
+    "warmth": "medium",
+    "seasons": [
+      "spring",
+      "summer",
+      "fall"
+    ],
+    "photo": "photos/light-wash-jeans.png",
+    "tags": [
+      "denim"
+    ],
+    "vibe": "everyday"
+  },
+  {
+    "id": "beige-trench-coat",
+    "type": "outerwear",
+    "name": "Beige trench coat",
+    "colors": [
+      "beige"
+    ],
+    "formality": "smart-casual",
+    "warmth": "medium",
+    "seasons": [
+      "spring",
+      "fall"
+    ],
+    "photo": "photos/beige-trench-coat.png",
+    "tags": [
+      "classic"
+    ],
+    "vibe": "classic neutral"
+  },
+  {
+    "id": "black-slip-dress",
+    "type": "dress",
+    "name": "Black slip midi dress",
+    "colors": [
+      "black"
+    ],
+    "formality": "formal",
+    "warmth": "light",
+    "seasons": [
+      "spring",
+      "summer",
+      "fall"
+    ],
+    "photo": "photos/black-slip-dress.png",
+    "tags": [
+      "evening"
+    ],
+    "vibe": "sleek"
+  },
+  {
+    "id": "white-sneakers",
+    "type": "shoes",
+    "name": "White leather sneakers",
+    "colors": [
+      "white"
+    ],
+    "formality": "casual",
+    "warmth": "light",
+    "seasons": [
+      "spring",
+      "summer",
+      "fall"
+    ],
+    "photo": "photos/white-sneakers.png",
+    "tags": [],
+    "vibe": "fresh"
+  },
+  {
+    "id": "tan-tote-bag",
+    "type": "accessory",
+    "name": "Tan leather tote",
+    "colors": [
+      "tan"
+    ],
+    "formality": "smart-casual",
+    "warmth": "light",
+    "seasons": [],
+    "photo": "photos/tan-tote-bag.png",
+    "tags": [
+      "bag"
+    ],
+    "vibe": "work-ready"
+  },
+  {
+    "id": "black-sunglasses",
+    "type": "accessory",
+    "name": "Black sunglasses",
+    "colors": [
+      "black"
+    ],
+    "formality": "casual",
+    "warmth": "light",
+    "seasons": [],
+    "photo": "photos/black-sunglasses.png",
+    "tags": [
+      "sunglasses"
+    ],
+    "vibe": "cool"
+  },
+  {
+    "id": "gold-hoop-earrings",
+    "type": "accessory",
+    "name": "Gold hoop earrings",
+    "colors": [
+      "gold"
+    ],
+    "formality": "smart-casual",
+    "warmth": "light",
+    "seasons": [],
+    "photo": "photos/gold-hoop-earrings.png",
+    "tags": [
+      "jewelry"
+    ],
+    "vibe": "minimal"
+  }
+]

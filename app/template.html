@@ -73,7 +73,7 @@ function pickOutfit(){
   const w=W(),o=O(),s=season(),F=FORM[o];
   const okI=i=>F.includes(i.formality)&&(!i.seasons.length||i.seasons.includes(s)||(w==='cold'&&i.seasons.includes('winter')));
   let pool=ITEMS.filter(okI); if(pool.length<4)pool=ITEMS.filter(i=>F.includes(i.formality)); if(pool.length<2)pool=ITEMS.slice();
-  const byR=r=>pool.filter(i=>role(i)===r&&!shown.includes(i.id));
+  const byR=r=>{const all=pool.filter(i=>role(i)===r);const fresh=all.filter(i=>!shown.includes(i.id));return fresh.length?fresh:all;};
   const out={};
   if(o==='athletic'){const a=pool.filter(isActive);out.feature=pick(a.filter(i=>i.type==='top'))||pick(a);out.bottom=pick(a.filter(i=>i.type==='bottom'));}
   else{const dr=byR('dress');
