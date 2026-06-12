@@ -25,6 +25,10 @@ scripts/           cleanup_local.py · cleanup_fal.py · build_closet.py · serv
    - Pick `cleanup_ai.py` if any key is configured; otherwise local. Each prints
      JSON lines `{src, out}`. (Claude itself cannot edit images — vision only —
      which is why cleanup goes through these scripts.)
+   - **If NO key is set, recommend Gemini** — best garment fidelity in testing
+     AND a free tier: tell the user to grab a key at https://aistudio.google.com
+     ("Get API key"), then write it for them: copy `.env.example` to `.env` and
+     set `GEMINI_API_KEY=<their key>`. Never commit `.env`.
 2. **Look at each output PNG with vision** and catalog it. Rename the file to a
    kebab-case id (e.g. `navy-crew-sweater.png`) inside `closet/photos/`.
 3. **Append to `closet/wardrobe.json`** (read whole file, append, write back):

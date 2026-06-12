@@ -48,15 +48,20 @@ python3 scripts/cleanup_local.py        # rembg matting on your machine
 **Way 2 — AI erase (removes hangers/hands, keeps the garment identical), with
 whichever key you already have** — `cleanup_ai.py` auto-detects it:
 
-| Provider | Key (env or `.env`) | Cost | Notes |
+| Provider | Key (env or `.env`) | Cost | Quality |
 |---|---|---|---|
-| **Gemini** | `GEMINI_API_KEY` | **free tier** ([aistudio.google.com](https://aistudio.google.com)) | same model family as fal's nano-banana |
-| **OpenAI** | `OPENAI_API_KEY` | ~$0.04/photo | gpt-image-1 edit |
-| **fal.ai** | `FAL_KEY` | ~$0.04/photo | nano-banana erase + BiRefNet matting |
+| ⭐ **Gemini** — *recommended* | `GEMINI_API_KEY` | **free tier** | **best** — this is the model ("nano-banana") that preserves garments most faithfully in our testing |
+| **fal.ai** | `FAL_KEY` | ~$0.04/photo | same model + BiRefNet matting (true transparency) — best finish if you're already on fal |
+| **OpenAI** | `OPENAI_API_KEY` | ~$0.04/photo | good; slightly more prone to redrawing details |
+
+**Quick setup (the recommended path):**
+1. Get a free key at [aistudio.google.com](https://aistudio.google.com) → "Get API key".
+2. Copy `.env.example` to `.env` and add the line `GEMINI_API_KEY=your-key`.
+3. Run it:
 
 ```bash
 python3 scripts/cleanup_ai.py                 # auto-picks from your keys
-python3 scripts/cleanup_ai.py --provider gemini
+python3 scripts/cleanup_ai.py --provider gemini   # or force one
 ```
 
 > **What about Claude?** Claude doesn't generate or edit images — but it's the
